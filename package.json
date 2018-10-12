@@ -1,0 +1,13 @@
+{
+  "name": "Fluorination Server",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://git.heroku.com/fluorination-server.git"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "description": "App for HackCooper 2018",
+  "license": "MIT"
+}
