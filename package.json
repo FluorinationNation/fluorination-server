@@ -6,7 +6,10 @@
     "url": "https://git.heroku.com/fluorination-server.git"
   },
   "dependencies": {
-    "express": "^4.16.4"
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "pg": "^7.5.0",
+    "pg-promise": "^8.5.0"
   },
   "scripts": {
     "heroku-postbuild": "npm install"
