@@ -8,6 +8,9 @@
   "dependencies": {
     "express": "^4.16.4"
   },
+  "scripts": {
+    "heroku-postbuild": "npm install"
+  },
   "description": "App for HackCooper 2018",
   "license": "MIT"
 }
