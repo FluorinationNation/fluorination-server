@@ -13,6 +13,8 @@ app.use(bodyParser.json());
 // for database
 const pgp = require('pg-promise')();
 const db = pgp(process.env.DATABASE_URL + "?ssl=true");
+// setting up database
+// db.none('create table users (id serial primary key, username text unique, password text unique, location text, posts text, rep int, quality float)').catch(_=>_);
 
 // receive data
 app.post('/sign_up', function(req, res) {
@@ -21,7 +23,7 @@ app.post('/sign_up', function(req, res) {
   let location = req.body.location;
 
   // simple validation here
-  db.none('insert into users (username, password, location) values($1, $2, $3) returning id', username, password, location)
+  db.none('insert into users (username, password, location) values($1, $2, $3) returning id', [username, password, location])
     .then(id => {
       console.log(id);
     })
