@@ -143,6 +143,7 @@
       id='sign_up'
       @click='sign_up()'>Sign up</button>
   </div>
+  <p class='mt-3'><a href @click='$emit("to-view", "search");$event.preventDefault()'>Return to search</a></p>
 </div>`,
     data() {
       return {
@@ -193,6 +194,7 @@
   <div>
     <button class='btn btn-primary w-auto' @click='sign_in'>Sign in</button>
   </div>
+  <p class='mt-3'><a href @click='$emit("to-view", "search");$event.preventDefault()'>Return to search</a></p>
 </div>`,
     data() {
       return {
@@ -231,13 +233,14 @@
       id='search'
       v-model='query'
       autocomplete='off'
+      @keyup='search'
       placeholder='What is the golden ratio?'>
     <div class="input-group-append">
       <span class="input-group-text p-0 border-primary" style='overflow: hidden' id="inputGroup-sizing-lg"><button class='btn btn-lg btn-primary w-100 h-100 rounded-0' @click='search'>Search</button></span>
     </div>
   </div>
   <div id='results'>
-    <div class="list-group">
+    <div class="list-group" v-show='query.length > 0'>
       <a href v-for='result in results' class="list-group-item list-group-item-action" @click='$emit("to-view","view_post",result.objectID);$event.preventDefault()'>
         {{ result.title }}
       </a>
@@ -273,6 +276,7 @@
   <p>User: <a href @click='$emit("to-view","user",uid.id);$event.preventDefault()'>{{ uid.username }}</a></p>
   <p>Location: {{ location }}</p>
   <p>{{ body }}</p>
+  <p class='mt-3'><a href @click='$emit("to-view", "search");$event.preventDefault()'>Return to search</a></p>
 </div>`,
     props: {
       data: Object
@@ -316,6 +320,7 @@
   let ProfileComponent = {
     template: `<div class='container'>
   <h1>Name: {{ name }}</h1>
+  <p class='mt-3'><a href @click='$emit("to-view", "search");$event.preventDefault()'>Return to search</a></p>
 </div>`,
     props: {
       data: Object
@@ -395,6 +400,7 @@
   <div class='form-group'>
     <button class='btn btn-primary' @click='add_knowledge'>Add knowledge</button>
   </div>
+  <p class='my-3'><a href @click='$emit("to-view", "search");$event.preventDefault()'>Return to search</a></p>
 </div>`,
     data() {
       return {
@@ -422,6 +428,32 @@
   /*Vue.component('sign-in', SignInComponent);
   Vue.component('sign-up', SignUpComponent);
   Vue.component('search', SearchComponent);*/
+
+  let AboutComponent = {
+    template: `<div class='container' id='about'>
+  <h3>The Vision</h3>
+  <p>Fluorination invites students to an interactive, informative, and immersive community with an education focused forum.</p>
+  <p>In chemistry, "fluorination" describes carbon surrounded by fluorine. Fluorination bonds together many Flustered students to a Central community with the hope to create a Fluorishing Nation through higher education.</p>
+  <p>Fluorine and carbon are shown at their best in toothpaste and diamond:</p>
+  <ul>
+    <li>Like toothpaste, Fluorination focuses on being accessible and helpful to everyone.</li>
+    <li>Like diamond, Fluorination focuses on valuable, quality content to share.</li>
+  </ul>
+  <hr>
+  <div class='float-right p-3'>
+    <img class='d-block m-2 rounded' id='team_img' src='assets/team.png'>
+    <div class='text-small text-secondary text-center'>From left: Andrew Kim, Dan(drew) Kim, Sunny Zhao, Jonathan Lam</div>
+  </div>
+  <h3>Meet the Team</h3>
+  <p>...</p>
+  <hr style='clear: both'>
+  <h3>Tech Specs and Attributions</h3>
+  <p>This website was put together with Bootstrap on the front end. The back end was built with Algolia (for search) and Node.js.</p>
+  <p>The website is hosted on Heroku's free hosting. The free domain name was provided by Domain.com and MLH.</p>
+  <p>The logo was created in Inkscape. The photos were taken during the event.</p>
+  <p>Mock content was written by team members during the event. All coding and brainstorming took place during the event.</p>
+</div>`
+  };
 
   // main app div
   let app = new Vue({
