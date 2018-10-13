@@ -14,7 +14,7 @@
     "pg-promise": "^8.5.0"
   },
   "scripts": {
-    "heroku-postbuild": "npm uninstall bcrypt"
+    "heroku-postbuild": "npm i"
   },
   "description": "App for HackCooper 2018",
   "license": "MIT"
