@@ -137,6 +137,12 @@ app.post('/add_knowledge', function(req, res) {
     });
 });
 
+// get post data
+app.post('/get_post', function(req, res) {
+  let pid = req.body.pid;
+
+});
+
 // statically host files in public folder
 app.use(express.static('./public/'));
 app.listen(process.env.PORT || 5000);

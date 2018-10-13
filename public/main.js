@@ -196,7 +196,10 @@
   // for main search
   let SearchComponent = {
     template: `<div class='container' id='search'>
-  <div class="input-group input-group-lg w-50 m-auto">
+  <div>
+    <img class='d-block m-auto' id='logo' src='assets/logo.png'>
+  </div>
+  <div class="input-group input-group-lg w-50 mx-auto pt-5">
     <input
       type="text"
       class="form-control"
