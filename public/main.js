@@ -553,6 +553,9 @@
     methods: {
       add_knowledge() {
         Server.add_knowledge(this.title, this.keywords, this.subject, this.course, this.location, this.body, data => {
+          if(data) {
+            this.$emit('to-view', 'search');
+          }
         });
       }
     },
