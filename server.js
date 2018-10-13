@@ -137,28 +137,40 @@ app.post('/add_knowledge', function(req, res) {
   let location = req.body.location;
   let body = req.body.body;
 
-  db.oneOrNone('insert into posts (title, keywords, subject, course, body, uid) values ($1, $2, $3, $4, $5, $6) returning id', [title, keywords, subject, course, body, req.session.uid])
-    .then(data => {
-      // send to algolia
-      let aobject = [{
-        objectID: data.id,
-        keywords: keywords,
-        title: title,
-        votes: 0,
-        subject: subject,
-        course: course,
-        location: location
-      }];
-      aindex.addObjects(aobject, (err, content) => {
-        console.log(content);
-      });
+  // geocoding
+  geocode(encodeURIComponent(location), data => {
+    let lat = data.Latitude;
+    let lng = data.Longitude;
+    let geo = { lat: lat, lng: lng };
 
-      res.send({id: data.id});
-    })
-    .catch(err => {
-      console.log(err);
-      res.send(false);
-    });
+    let geo_db = {
+      loc: location,
+      geo: lat
+    };
+
+    db.oneOrNone('insert into posts (title, keywords, subject, course, body, uid, location) values ($1, $2, $3, $4, $5, $6, $7) returning id', [title, keywords, subject, course, body, req.session.uid, JSON.stringify(geo_db)])
+        .then(data => {
+        // send to algolia
+        let aobject = [{
+          objectID: data.id,
+          keywords: keywords,
+          title: title,
+          votes: 0,
+          subject: subject,
+          course: course,
+          _geoloc: geo
+        }];
+        aindex.addObjects(aobject, (err, content) => {
+          console.log(content);
+        });
+
+        res.send({id: data.id});
+      })
+      .catch(err => {
+        console.log(err);
+        res.send(false);
+      });
+  });
 });
 
 // get post data
@@ -209,6 +221,7 @@ let geocode = (address, cb) => {
     path: `/6.2/geocode.json?app_id=${process.env.HERE_APPLICATION_ID}&app_code=${process.env.HERE_APPLICATION_CODE}&searchtext=${address}`,
     method: 'GET'
   };
+  console.log(options.host + options.path);
   http.request(options, function(res2) {
     res2.setEncoding('utf8');
     let total = '';
@@ -219,7 +232,10 @@ let geocode = (address, cb) => {
       total = JSON.parse(total);
 
       // send coordinates back
-      cb(total.Response.View[0].Result[0].Location.DisplayPosition);
+      if(total.Response == undefined || total.Response.View.length == 0)
+        cb(null);
+      else
+        cb(total.Response.View[0].Result[0].Location.DisplayPosition);
     });
   }).end();
 };
