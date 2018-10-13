@@ -202,7 +202,13 @@ app.post('/get_post', function(req, res) {
 app.post('/query', function(req, res) {
   let query = req.body.query;
   let filters = req.body.filters;
-  aindex.search({ query: query, filters: filters }, (err, data) => {
+  let geo_filter = req.body.geo_filter;
+  let data_obj = { query: query, filters: filters };
+  if(geo_filter != -1) {
+    data_obj.aroundLatLng = geo_filter;
+    data_obj.aroundRadius = 150000;
+  }
+  aindex.search(data_obj, (err, data) => {
     if(err) {
       console.log(err);
       return res.send(false);

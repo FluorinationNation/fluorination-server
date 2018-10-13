@@ -53,8 +53,9 @@
     get_post(pid, cb) {
       this.send_request('get_post', { pid: pid }, cb);
     },
-    query(query, filters, cb) {
-      this.send_request('query', { query: query, filters: filters }, cb);
+    query(query, filters, geo_filter, cb) {
+      let data_obj = { query: query, filters: filters, geo_filter: geo_filter };
+      this.send_request('query', data_obj, cb);
     }
   };
 
@@ -307,6 +308,7 @@
         subject_filter: -1,
         course_filter: -1,
         location_filter: -1,
+        geo_filter: -1,
         show_map: false,
         map: null,
         markers: []
@@ -327,8 +329,9 @@
           filters.push('subject:' + this.subject_filter);
         if(this.course_filter != -1)
           filters.push('course:' + this.course_filter);
-        Server.query(this.query, filters.join(' AND '), data => {
+        Server.query(this.query, filters.join(' AND '), this.geo_filter, data => {
           // i feel super smart using splice and the spread operator =)
+          console.log(this.results);
           this.results.splice(0, this.results.length, ...JSON.parse(data).hits);
 
           // add markers to map
@@ -347,6 +350,9 @@
       },
       toggle_map() {
         this.show_map = !this.show_map;
+        if(!this.show_map) {
+          this.geo_filter = -1;
+        }
         if(this.show_map) {
           setTimeout(() => {
             let platform = new H.service.Platform({
@@ -361,6 +367,14 @@
                 center: { lat: 39, lng: -98 }
               });
             this.map.addObjects(this.markers);
+
+            // event listener
+            this.$refs.map_container.addEventListener('click', evt => {
+              let coord = this.map.screenToGeo(evt.pageX - this.$refs.map_container.getBoundingClientRect().left, evt.pageY - this.$refs.map_container.getBoundingClientRect().top);
+              this.geo_filter = coord.lat.toFixed(4) + ', ' + coord.lng.toFixed(4);
+              console.log(this.geo_filter);
+              this.search();
+            });
           }, 500);
         }
       }
