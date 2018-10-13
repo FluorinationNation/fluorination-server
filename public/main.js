@@ -3,12 +3,11 @@
 
   // server
   let Server = {
-    send_request(action, data) {
+    send_request(action, data, cb) {
       let xhr = new XMLHttpRequest();
       xhr.onload = function() {
-        if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-          console.log("complete!");
-        }
+        if(this.readyState == XMLHttpRequest.DONE && this.status == 200)
+          cb(this.response);
       };
       xhr.open('POST', '/' + action, true);
       
@@ -19,12 +18,24 @@
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       xhr.send(params.join('&'));
     },
-    sign_up(username, password, loc) {
+    sign_up(username, password, loc, cb) {
       this.send_request('sign_up', {
           username: username,
           password: password,
           location: loc
-        });
+        }, cb);
+    },
+    sign_in(username, password, cb) {
+      this.send_request('sign_in', {
+          username: username,
+          password: password
+        }, cb);
+    },
+    get_username(cb) {
+      this.send_request('get_username', {}, cb);
+    },
+    sign_out(cb) {
+      this.send_request('sign_out', {}, cb);
     }
   };
 
@@ -99,6 +110,7 @@
     <option value='0'>Other</option>
   </select><br>
   <button
+    class='btn'
     type='button'
     id='sign_up'
     @click='sign_up()'>Sign up</button>
@@ -112,18 +124,93 @@
     },
     methods: {
       sign_up() {
-        Server.sign_up(this.username, this.password, this.loc);
+        Server.sign_up(this.username, this.password, this.loc, data => {
+          if(data)
+            this.$emit('update-user');
+        });
       }
     }
   };
 
+  // for signing in
+  let SignInComponent = {
+    template: `<div id='container'>
+  <h1>Sign In</h1>
+  <h3>Username</h3>
+  <input
+    type='text'
+    v-model='username'
+    placeholder='bucky'><br>
+  <h3>Password</h3>
+  <input
+    type='password'
+    v-model='password'
+    placeholder='**********'><br>
+  <button @click='sign_in'>Sign in</button>
+</div>`,
+    data() {
+      return {
+        username: '',
+        password: ''
+      };
+    },
+    methods:  {
+      sign_in() {
+        Server.sign_in(this.username, this.password, data => {
+          if(data) {
+            this.$emit('update-user');
+          }
+        });
+      }
+    }
+  };
+
+  // for main search
+  let SearchComponent = {
+    template: `<div id='#container'>
+  <div class="input-group input-group-lg w-50 m-auto">
+    <div class="input-group-prepend">
+      <span class="input-group-text" id="inputGroup-sizing-lg">Search</span>
+    </div>
+    <input type="text" class="form-control" id='search'>
+  </div>
+</div>`
+  };
+  
+  // main search component
+
+  // register components for testing
+  Vue.component('sign-in', SignInComponent);
+  Vue.component('sign-up', SignUpComponent);
+  Vue.component('search', SearchComponent);
+
   // main app div
   let app = new Vue({
     el: '#app',
-    computed: {
-      current_view() {
-        return SignUpComponent;
+    data: {
+      current_view: SearchComponent,
+      username: null
+    },
+    methods: {
+      to_view(view_name) {
+        switch(view_name) {
+          case 'sign_in': this.current_view = SignInComponent; break;
+          case 'sign_up': this.current_view = SignUpComponent; break;
+        }
+      },
+      update_user() {
+        Server.get_username(data => {
+          this.username = data;
+        });
+      },
+      sign_out() {
+        Server.sign_out(_ => {
+          this.update_user();
+        });
       }
+    },
+    created() {
+      this.update_user();
     }
   });
 
