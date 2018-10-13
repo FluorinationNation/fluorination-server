@@ -187,7 +187,7 @@ app.post('/query', function(req, res) {
   aindex.search({ query: query }, (err, data) => {
     if(err) {
       console.log(err);
-      return res.send(false)
+      return res.send(false);
     }
 
     res.send(data);

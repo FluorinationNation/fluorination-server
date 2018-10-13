@@ -224,27 +224,37 @@
   <div>
     <img class='d-block m-auto' id='logo' src='assets/logo.png'>
   </div>
-  <div class="input-group input-group-lg w-50 mx-auto pt-5">
+  <div class="input-group input-group-lg w-50 mx-auto py-5">
     <input
       type="text"
       class="form-control"
       id='search'
       v-model='query'
+      autocomplete='off'
       placeholder='What is the golden ratio?'>
     <div class="input-group-append">
       <span class="input-group-text p-0 border-primary" style='overflow: hidden' id="inputGroup-sizing-lg"><button class='btn btn-lg btn-primary w-100 h-100 rounded-0' @click='search'>Search</button></span>
     </div>
   </div>
+  <div id='results'>
+    <div class="list-group">
+      <a href v-for='result in results' class="list-group-item list-group-item-action" @click='$emit("to-view","view_post",result.objectID);$event.preventDefault()'>
+        {{ result.title }}
+      </a>
+    </div>
+  </div>
 </div>`,
     data() {
       return {
-        query: ''
+        query: '',
+        results: []
       };
     },
     methods: {
       search() {
         Server.query(this.query, data => {
-          console.log(data);
+          // i feel super smart using splice and the spread operator =)
+          this.results.splice(0, this.results.length, ...JSON.parse(data).hits);
         });
       }
     }
@@ -409,9 +419,9 @@
   };
 
   // register components for testing
-  Vue.component('sign-in', SignInComponent);
+  /*Vue.component('sign-in', SignInComponent);
   Vue.component('sign-up', SignUpComponent);
-  Vue.component('search', SearchComponent);
+  Vue.component('search', SearchComponent);*/
 
   // main app div
   let app = new Vue({
