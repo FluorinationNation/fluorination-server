@@ -24,6 +24,12 @@ html, body, #app, component, .container {
   right: 1.5em;
   top: 1.5em;
 }
+#search_container {
+  transition: 0.5s width;
+}
+.container.collapsed #search_container {
+  width: 100% !important;
+}
 #logo_container {
   height: 15em;
   overflow: hidden;

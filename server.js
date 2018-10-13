@@ -37,6 +37,9 @@ const asearch = require('algoliasearch');
 const aclient = asearch(process.env.ALGOLIA_APPLICATION_ID, process.env.ALGOLIA_API_KEY);
 const aindex = aclient.initIndex('fluorination');
 
+// simple REST API for Here.com, no need for fancy libraries
+const http = require('http');
+
 // sign up a user
 app.post('/sign_up', async function(req, res) {
   let username = req.body.username;
@@ -125,6 +128,8 @@ app.post('/sign_out', function(req, res) {
 
 // insert knowledge into the database
 app.post('/add_knowledge', function(req, res) {
+  if(!req.session.uid) return res.send(false);
+
   let title = req.body.title;
   let keywords = req.body.keywords;
   let subject = req.body.subject;
@@ -132,7 +137,7 @@ app.post('/add_knowledge', function(req, res) {
   let location = req.body.location;
   let body = req.body.body;
 
-  db.oneOrNone('insert into posts (title, keywords, subject, course, body) values ($1, $2, $3, $4, $5) returning id', [title, keywords, subject, course, body])
+  db.oneOrNone('insert into posts (title, keywords, subject, course, body, uid) values ($1, $2, $3, $4, $5, $6) returning id', [title, keywords, subject, course, body, req.session.uid])
     .then(data => {
       // send to algolia
       let aobject = [{
@@ -193,6 +198,30 @@ app.post('/query', function(req, res) {
     res.send(data);
   });
 });
+
+// REST API for Here.com
+// API request from https://stackoverflow.com/a/5643366/2397327
+let geocode = (address, cb) => {
+  var options = {
+    host: 'geocoder.api.here.com',
+    port: 80,
+    path: `/6.2/geocode.json?app_id=${process.env.HERE_APPLICATION_ID}&app_code=${process.env.HERE_APPLICATION_CODE}&searchtext=${address}`,
+    method: 'GET'
+  };
+  http.request(options, function(res2) {
+    res2.setEncoding('utf8');
+    let total = '';
+    res2.on('data', function (chunk) {
+      total += chunk;
+    });
+    res2.on('end', function() {
+      total = JSON.parse(total);
+
+      // send coordinates back
+      cb(total.Response.View[0].Result[0].Location.DisplayPosition);
+    });
+  }).end();
+};
 
 // statically host files in public folder
 app.use(express.static('./public/'));

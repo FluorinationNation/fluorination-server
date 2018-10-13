@@ -238,7 +238,7 @@
   <div id='logo_container'>
     <img class='d-block m-auto' id='logo' src='assets/logo.png'>
   </div>
-  <div class="input-group input-group-lg w-50 mx-auto py-5">
+  <div class="input-group input-group-lg w-50 mx-auto pt-5" id='search_container'>
     <input
       autofocus
       ref='search_input'
@@ -251,6 +251,33 @@
       @keyup='search'
       placeholder='What is the golden ratio?'>
   </div>
+  <div class='pt-3 pb-5 form-inline' id='filters' v-show='query.length > 0'>
+    <label class='mr-2'>Filter by:</label> 
+    <div class='input-group'>
+      <select class='custom-select form-control mr-2' id='subject_filter' v-model='subject_filter'>
+        <option value='-1'>Subject</option>
+        <option value='1'>Mathematics</option>
+        <option value='2'>Science</option>
+        <option value='3'>Literature</option>
+        <option value='4'>Language</option>
+        <option value='5'>Social Studies</option>
+        <option value='6'>Health</option>
+        <option value='7'>Art</option>
+        <option value='8'>Education</option>
+        <option value='0'>Other</option>
+      </select>
+    </div>
+    <div class='input-group'>
+      <select class='custom-select form-control mr-2' id='course_filter' v-model='course_filter'>
+        <option value='-1'>Course</option>
+        <option value='0'>Other</option>
+      </select>
+    </div>
+    <div class='input-group'>
+      <button class='btn btn-outline-primary form-control mr-2' @click='toggle_map'>Location</button>
+    </div>
+  </div>
+  <div id='map_container'></div>
   <div id='results'>
     <div class="list-group" v-show='query.length > 0'>
       <a href v-for='result in results' class="list-group-item list-group-item-action" @click='$emit("to-view","view_post",result.objectID);$event.preventDefault()'>
@@ -265,7 +292,10 @@
     data() {
       return {
         query: '',
-        results: []
+        results: [],
+        subject_filter: -1,
+        course_filter: -1,
+        location_filter: -1
       };
     },
     methods: {
@@ -279,6 +309,9 @@
         if(this.results.length > 0 && this.query.length > 0) {
           this.$emit('to-view', 'view_post', this.results[0].objectID);
         }
+      },
+      toggle_map() {
+        
       }
     },
     mounted() {
@@ -363,6 +396,7 @@
   // create post
   let PostComponent = {
     template: `<div class='container'>
+  <div class='alert alert-danger' v-if='!signed_in'>You must be signed in to add knowledge to Fluorination.</div>
   <div class='form-group'>
     <label for='title_input'>Title</label>
     <input
@@ -407,7 +441,7 @@
   <div class='form-group'>
     <label for='course_select'>Course</label>
     <select class='custom-select d-block w-auto' id='course_select' v-model='course'>
-      <option value='-1'>Select a Subject</option>
+      <option value='-1'>Select a Course</option>
       <!-- dynamically fill this soon -->
       <option value='0'>Other</option>
     </select>
@@ -433,7 +467,8 @@
         subject: -1,
         course: -1,
         location: '',
-        body: ''
+        body: '',
+        signed_in: true
       };
     },
     methods: {
@@ -445,17 +480,16 @@
     },
     created() {
       // updated courses and location from server
+      Server.get_userdata(data => {
+        if(!data) this.signed_in = false;
+      });
     },
     mounted() {
       this.$refs.title_input.focus();
     }
   };
 
-  // register components for testing
-  /*Vue.component('sign-in', SignInComponent);
-  Vue.component('sign-up', SignUpComponent);
-  Vue.component('search', SearchComponent);*/
-
+  // about page
   let AboutComponent = {
     template: `<div class='container' id='about'>
   <h3>The Vision</h3>
