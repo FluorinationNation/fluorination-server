@@ -66,9 +66,11 @@
     <input
       class='form-control w-auto'
       type='text'
+      ref='username_input'
       id='username_input'
       v-model='username'
-      placeholder='johnny_appleseed'>
+      placeholder='johnny_appleseed'
+      @keyup.enter='sign_up'>
   </div>
   <div class='form-group'>
     <label for='password_input'>Password</label>
@@ -77,11 +79,12 @@
       type='password'
       id='password_input'
       v-model='password'
-      placeholder='⁎⁎⁎⁎⁎⁎'>
+      placeholder='⁎⁎⁎⁎⁎⁎'
+      @keyup.enter='sign_up'>
   </div>
   <div class='form-group'>
     <label for='location_select'>Location</label>
-    <select class='custom-select d-block w-auto' id='location_select' v-model='loc'>
+    <select class='custom-select d-block w-auto' id='location_select' v-model='loc' @keyup.enter='sign_up'>
       <option value='-1'>Select a location</option>
       <option value='1'>Alabama</option>
       <option value='2'>Alaska</option>
@@ -167,6 +170,9 @@
         if(data)
           this.$emit('to-view', 'search');
       });
+    },
+    mounted() {
+      this.$refs.username_input.focus();
     }
   };
 
@@ -178,9 +184,11 @@
     <input
       class='form-control w-auto'
       type='text'
+      ref='username_input'
       id='username_input'
       v-model='username'
-      placeholder='bucky'>
+      placeholder='bucky'
+      @keyup.enter='sign_in'>
   </div>
   <div class='form-group'>
     <label for='password_input'>Password</label>
@@ -189,7 +197,8 @@
       type='password'
       id='password_input'
       v-model='password'
-      placeholder='⁎⁎⁎⁎⁎⁎'>
+      placeholder='⁎⁎⁎⁎⁎⁎'
+      @keyup.enter='sign_in'>
   </div>
   <div>
     <button class='btn btn-primary w-auto' @click='sign_in'>Sign in</button>
@@ -217,33 +226,39 @@
         if(data)
           this.$emit('to-view', 'search');
       });
+    },
+    mounted() {
+      this.$refs.username_input.focus();
     }
   };
 
   // for main search
   let SearchComponent = {
-    template: `<div class='container' id='search'>
-  <div>
+    template: `<div class='container' :class='query.length > 0 ? "collapsed" : ""' id='search'>
+  <div id='logo_container'>
     <img class='d-block m-auto' id='logo' src='assets/logo.png'>
   </div>
   <div class="input-group input-group-lg w-50 mx-auto py-5">
     <input
+      autofocus
+      ref='search_input'
       type="text"
       class="form-control"
       id='search'
       v-model='query'
       autocomplete='off'
+      @keyup.enter='feeling_lucky'
       @keyup='search'
       placeholder='What is the golden ratio?'>
-    <div class="input-group-append">
-      <span class="input-group-text p-0 border-primary" style='overflow: hidden' id="inputGroup-sizing-lg"><button class='btn btn-lg btn-primary w-100 h-100 rounded-0' @click='search'>Search</button></span>
-    </div>
   </div>
   <div id='results'>
     <div class="list-group" v-show='query.length > 0'>
       <a href v-for='result in results' class="list-group-item list-group-item-action" @click='$emit("to-view","view_post",result.objectID);$event.preventDefault()'>
         {{ result.title }}
       </a>
+    </div>
+    <div v-show='query.length != 0 && results.length == 0'>
+      <p class='text-secondary text-center'>No results were found.</p>
     </div>
   </div>
 </div>`,
@@ -259,7 +274,15 @@
           // i feel super smart using splice and the spread operator =)
           this.results.splice(0, this.results.length, ...JSON.parse(data).hits);
         });
+      },
+      feeling_lucky() {
+        if(this.results.length > 0 && this.query.length > 0) {
+          this.$emit('to-view', 'view_post', this.results[0].objectID);
+        }
       }
+    },
+    mounted() {
+      this.$refs.search_input.focus();
     }
   };
 
@@ -344,6 +367,7 @@
     <label for='title_input'>Title</label>
     <input
       class='form-control'
+      ref='title_input'
       id='title_input'
       placeholder='Title'
       v-model='title'>
@@ -421,6 +445,9 @@
     },
     created() {
       // updated courses and location from server
+    },
+    mounted() {
+      this.$refs.title_input.focus();
     }
   };
 

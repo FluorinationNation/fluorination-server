@@ -16,10 +16,23 @@ html, body, #app, component, .container {
   flex-direction: column;
   justify-content: center;
 }
+.container#search.collapsed {
+  justify-content: flex-start;
+}
 #userblock {
   position: absolute;
   right: 1.5em;
   top: 1.5em;
+}
+#logo_container {
+  height: 15em;
+  overflow: hidden;
+  opacity: 1;
+  transition: height 0.5s, opacity 0.5s;;
+}
+.container.collapsed #logo_container {
+  height: 0;
+  opacity: 0;
 }
 #logo {
   width: 15em;
