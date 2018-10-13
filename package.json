@@ -10,14 +10,12 @@
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "pg": "^7.5.0",
-    "pg-promise": "^8.5.0"
+    "pg-promise": "^8.5.0",
+    "bcrypt": "^3.0.0"
   },
   "scripts": {
     "heroku-postbuild": "npm install"
   },
   "description": "App for HackCooper 2018",
-  "license": "MIT",
-  "devDependencies": {
-    "bcrypt": "^3.0.0"
-  }
+  "license": "MIT"
 }
