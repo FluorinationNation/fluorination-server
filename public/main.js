@@ -53,8 +53,8 @@
     get_post(pid, cb) {
       this.send_request('get_post', { pid: pid }, cb);
     },
-    query(query, cb) {
-      this.send_request('query', { query: query }, cb);
+    query(query, filters, cb) {
+      this.send_request('query', { query: query, filters: filters }, cb);
     }
   };
 
@@ -254,7 +254,11 @@
   <div class='pt-3 pb-5 form-inline' id='filters' v-show='query.length > 0'>
     <label class='mr-2'>Filter by:</label> 
     <div class='input-group'>
-      <select class='custom-select form-control mr-2' id='subject_filter' v-model='subject_filter'>
+      <select
+        class='custom-select form-control mr-2'
+        id='subject_filter'
+        v-model='subject_filter'
+        @change='search'>
         <option value='-1'>Subject</option>
         <option value='1'>Mathematics</option>
         <option value='2'>Science</option>
@@ -268,7 +272,11 @@
       </select>
     </div>
     <div class='input-group'>
-      <select class='custom-select form-control mr-2' id='course_filter' v-model='course_filter'>
+      <select
+        class='custom-select form-control mr-2'
+        id='course_filter'
+        v-model='course_filter'
+        @change='search'>
         <option value='-1'>Course</option>
         <option value='0'>Other</option>
       </select>
@@ -300,7 +308,13 @@
     },
     methods: {
       search() {
-        Server.query(this.query, data => {
+        // determine which filters to use
+        let filters = [];
+        if(this.subject_filter != -1)
+          filters.push('subject:' + this.subject_filter);
+        if(this.course_filter != -1)
+          filters.push('course:' + this.course_filter);
+        Server.query(this.query, filters.join(' AND '), data => {
           // i feel super smart using splice and the spread operator =)
           this.results.splice(0, this.results.length, ...JSON.parse(data).hits);
         });
