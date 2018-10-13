@@ -285,7 +285,7 @@
       <button class='btn btn-outline-primary form-control mr-2' @click='toggle_map'>Location</button>
     </div>
   </div>
-  <div id='map_container'></div>
+  <div class='d-block mx-auto' id='map_container' style='width:640px;height:480px;position:relative;overflow:hidden' ref='map_container' v-show='show_map'></div>
   <div id='results'>
     <div class="list-group" v-show='query.length > 0'>
       <a href v-for='result in results' class="list-group-item list-group-item-action" @click='$emit("to-view","view_post",result.objectID);$event.preventDefault()'>
@@ -330,6 +330,18 @@
     },
     mounted() {
       this.$refs.search_input.focus();
+      var platform = new H.service.Platform({
+        'app_id': '5qyf1xaVdILt6uHyIx8J',
+        'app_code': '_WZ8o92p1VEsJPfkuyZ7oQ'
+      });
+      let default_layers = platform.createDefaultLayers();
+      let map = new H.Map(this.$refs.map_container,
+        default_layers.normal.map,
+        {
+          zoom: 4,
+          center: { lat: 39, lng: -98 }
+        });
+
     }
   };
 
@@ -522,9 +534,9 @@
   <h3>Meet the Team</h3>
   <p>...</p>
   <hr style='clear: both'>
-  <h3>Tech Specs and Attributions</h3>
-  <p>This website was put together with Bootstrap on the front end. The back end was built with Algolia (for search) and Node.js.</p>
-  <p>The website is hosted on Heroku's free hosting. The free domain name was provided by Domain.com and MLH.</p>
+  <h3>Libraries and Attributions</h3>
+  <p>This website was put together with Bootstrap on the front end. The back end was built with <strong>Algolia</strong> (for search), <strong>Here.com</strong> (for geocoding), and Node.js.</p>
+  <p>The website is hosted on Heroku's free hosting. There were difficulties connecting the project to the free Domain.com account.</p>
   <p>The logo was created in Inkscape. The photos were taken during the event.</p>
   <p>Mock content was written by team members during the event. All coding and brainstorming took place during the event.</p>
 </div>`
