@@ -181,6 +181,19 @@ app.post('/get_post', function(req, res) {
     });
 });
 
+// query
+app.post('/query', function(req, res) {
+  let query = req.body.query;
+  aindex.search({ query: query }, (err, data) => {
+    if(err) {
+      console.log(err);
+      return res.send(false)
+    }
+
+    res.send(data);
+  });
+});
+
 // statically host files in public folder
 app.use(express.static('./public/'));
 app.listen(process.env.PORT || 5000);

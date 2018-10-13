@@ -52,6 +52,9 @@
     },
     get_post(pid, cb) {
       this.send_request('get_post', { pid: pid }, cb);
+    },
+    query(query, cb) {
+      this.send_request('query', { query: query }, cb);
     }
   };
 
@@ -151,10 +154,18 @@
     methods: {
       sign_up() {
         Server.sign_up(this.username, this.password, this.loc, data => {
-          if(data)
+          if(data) {
             this.$emit('update-user');
+            this.$emit('to-view', 'search');
+          }
         });
       }
+    },
+    created() {
+      Server.get_userdata(data => {
+        if(data)
+          this.$emit('to-view', 'search');
+      });
     }
   };
 
@@ -192,10 +203,18 @@
     methods:  {
       sign_in() {
         Server.sign_in(this.username, this.password, data => {
-          if(data)
+          if(data) {
             this.$emit('update-user');
+            this.$emit('to-view', 'search');
+          }
         });
       }
+    },
+    created() {
+      Server.get_userdata(data => {
+        if(data)
+          this.$emit('to-view', 'search');
+      });
     }
   };
 
@@ -210,12 +229,25 @@
       type="text"
       class="form-control"
       id='search'
+      v-model='query'
       placeholder='What is the golden ratio?'>
     <div class="input-group-append">
-      <span class="input-group-text p-0 border-primary" style='overflow: hidden' id="inputGroup-sizing-lg"><button class='btn btn-lg btn-primary w-100 h-100 rounded-0' @click='$emit("to-view", "view_post", "8")'>Search</button></span>
+      <span class="input-group-text p-0 border-primary" style='overflow: hidden' id="inputGroup-sizing-lg"><button class='btn btn-lg btn-primary w-100 h-100 rounded-0' @click='search'>Search</button></span>
     </div>
   </div>
-</div>`
+</div>`,
+    data() {
+      return {
+        query: ''
+      };
+    },
+    methods: {
+      search() {
+        Server.query(this.query, data => {
+          console.log(data);
+        });
+      }
+    }
   };
 
   // for viewing a post
