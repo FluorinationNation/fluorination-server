@@ -19,8 +19,8 @@
       <!-- user details in top right -->
       <div id='userblock'>
         <div v-if='username'>
-          <a title='View profile' :href='"/user/" + username'>{{ username }}</a>
-          <button @click='sign_out' @click='sign_out'>Sign out</button>
+          <a class='text-underline mr-2' href title='View profile' @click='to_view("user", username);$event.preventDefault()'>{{ username }}</a>
+          <button class='btn btn-outline-danger' @click='sign_out' @click='sign_out'>Sign out</button>
         </div>
         <div v-else>
           <button class='btn btn-outline-primary' @click='to_view("sign_in")'>Sign in</button>
@@ -31,6 +31,7 @@
       <!-- main view -->
       <component
         :is='current_view'
+        :data='data'
         @update-user='update_user'></component>
 
     </div>

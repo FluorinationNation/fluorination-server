@@ -41,76 +41,84 @@
 
   // sign in component
   let SignUpComponent = {
-    template: `<div id='container'>
-  <h1>Sign Up</h1>
-  <h3>Username</h3>
-  <input
-    type='text'
-    id='username'
-    v-model='username'
-    placeholder='johnny_appleseed'><br>
-  <h3>Password</h3>
-  <input
-    type='password'
-    id='password'
-    v-model='password'
-    placeholder='*******'><br>
-  <select v-model='loc'>
-    <option value='-1'>Select a location</option>
-    <option value='1'>Alabama</option>
-    <option value='2'>Alaska</option>
-    <option value='3'>Arizona</option>
-    <option value='4'>Arkansas</option>
-    <option value='5'>California</option>
-    <option value='6'>Colorado</option>
-    <option value='7'>Connecticut</option>
-    <option value='8'>Delaware</option>
-    <option value='9'>Florida</option>
-    <option value='10'>Georgia</option>
-    <option value='11'>Hawaii</option>
-    <option value='12'>Idaho</option>
-    <option value='13'>Illinois</option>
-    <option value='14'>Indiana</option>
-    <option value='15'>Iowa</option>
-    <option value='16'>Kansas</option>
-    <option value='17'>Kentucky</option>
-    <option value='18'>Louisiana</option>
-    <option value='19'>Maine</option>
-    <option value='20'>Maryland</option>
-    <option value='21'>Massachusetts</option>
-    <option value='22'>Michigan</option>
-    <option value='23'>Minnesota</option>
-    <option value='24'>Mississippi</option>
-    <option value='25'>Missouri</option>
-    <option value='26'>Montana</option>
-    <option value='27'>Nebraska</option>
-    <option value='28'>Nevada</option>
-    <option value='29'>New Hampshire</option>
-    <option value='30'>New Jersey</option>
-    <option value='31'>New Mexico</option>
-    <option value='32'>New York</option>
-    <option value='33'>North Carolina</option>
-    <option value='34'>North Dakota</option>
-    <option value='35'>Ohio</option>
-    <option value='36'>Oklahoma</option>
-    <option value='37'>Oregon</option>
-    <option value='38'>Pennsylvania</option>
-    <option value='39'>Rhode Island</option>
-    <option value='40'>South Carolina</option>
-    <option value='41'>South Dakota</option>
-    <option value='42'>Tennessee</option>
-    <option value='43'>Texas</option>
-    <option value='44'>Utah</option>
-    <option value='45'>Vermont</option>
-    <option value='46'>Virginia</option>
-    <option value='47'>Washington</option>
-    <option value='48'>West Virginia</option>
-    <option value='49'>Wisconsin</option>
-    <option value='50'>Wyoming</option>
-    <option value='0'>Other</option>
-  </select><br>
+    template: `<div class='container'>
+  <div class='form-group'>
+    <label for='username_input'>Username</label>
+    <input
+      class='form-control w-auto'
+      type='text'
+      id='username_input'
+      v-model='username'
+      placeholder='johnny_appleseed'>
+  </div>
+  <div class='form-group'>
+    <label for='password_input'>Password</label>
+    <input
+      class='form-control w-auto'
+      type='password'
+      id='password_input'
+      v-model='password'
+      placeholder='⁎⁎⁎⁎⁎⁎'>
+  </div>
+  <div class='form-group'>
+    <label for='location_select'>Location</label>
+    <select class='custom-select d-block w-auto' id='location_select' v-model='loc'>
+      <option value='-1'>Select a location</option>
+      <option value='1'>Alabama</option>
+      <option value='2'>Alaska</option>
+      <option value='3'>Arizona</option>
+      <option value='4'>Arkansas</option>
+      <option value='5'>California</option>
+      <option value='6'>Colorado</option>
+      <option value='7'>Connecticut</option>
+      <option value='8'>Delaware</option>
+      <option value='9'>Florida</option>
+      <option value='10'>Georgia</option>
+      <option value='11'>Hawaii</option>
+      <option value='12'>Idaho</option>
+      <option value='13'>Illinois</option>
+      <option value='14'>Indiana</option>
+      <option value='15'>Iowa</option>
+      <option value='16'>Kansas</option>
+      <option value='17'>Kentucky</option>
+      <option value='18'>Louisiana</option>
+      <option value='19'>Maine</option>
+      <option value='20'>Maryland</option>
+      <option value='21'>Massachusetts</option>
+      <option value='22'>Michigan</option>
+      <option value='23'>Minnesota</option>
+      <option value='24'>Mississippi</option>
+      <option value='25'>Missouri</option>
+      <option value='26'>Montana</option>
+      <option value='27'>Nebraska</option>
+      <option value='28'>Nevada</option>
+      <option value='29'>New Hampshire</option>
+      <option value='30'>New Jersey</option>
+      <option value='31'>New Mexico</option>
+      <option value='32'>New York</option>
+      <option value='33'>North Carolina</option>
+      <option value='34'>North Dakota</option>
+      <option value='35'>Ohio</option>
+      <option value='36'>Oklahoma</option>
+      <option value='37'>Oregon</option>
+      <option value='38'>Pennsylvania</option>
+      <option value='39'>Rhode Island</option>
+      <option value='40'>South Carolina</option>
+      <option value='41'>South Dakota</option>
+      <option value='42'>Tennessee</option>
+      <option value='43'>Texas</option>
+      <option value='44'>Utah</option>
+      <option value='45'>Vermont</option>
+      <option value='46'>Virginia</option>
+      <option value='47'>Washington</option>
+      <option value='48'>West Virginia</option>
+      <option value='49'>Wisconsin</option>
+      <option value='50'>Wyoming</option>
+      <option value='0'>Other</option>
+    </select>
+  </div>
   <button
-    class='btn'
+    class='btn btn-primary'
     type='button'
     id='sign_up'
     @click='sign_up()'>Sign up</button>
@@ -134,19 +142,26 @@
 
   // for signing in
   let SignInComponent = {
-    template: `<div id='container'>
-  <h1>Sign In</h1>
-  <h3>Username</h3>
-  <input
-    type='text'
-    v-model='username'
-    placeholder='bucky'><br>
-  <h3>Password</h3>
-  <input
-    type='password'
-    v-model='password'
-    placeholder='**********'><br>
-  <button @click='sign_in'>Sign in</button>
+    template: `<div class='container'>
+  <div class='form-group'>
+    <label for='username_input'>Username</label>
+    <input
+      class='form-control w-auto'
+      type='text'
+      id='username_input'
+      v-model='username'
+      placeholder='bucky'>
+  </div>
+  <div class='form-group'>
+    <label for='password_input'>Password</label>
+    <input
+      class='form-control w-auto'
+      type='password'
+      id='password_input'
+      v-model='password'
+      placeholder='⁎⁎⁎⁎⁎⁎'>
+  </div>
+  <button class='btn btn-primary' @click='sign_in'>Sign in</button>
 </div>`,
     data() {
       return {
@@ -157,9 +172,8 @@
     methods:  {
       sign_in() {
         Server.sign_in(this.username, this.password, data => {
-          if(data) {
+          if(data)
             this.$emit('update-user');
-          }
         });
       }
     }
@@ -167,7 +181,7 @@
 
   // for main search
   let SearchComponent = {
-    template: `<div id='#container'>
+    template: `<div class='#container'>
   <div class="input-group input-group-lg w-50 m-auto">
     <input
       type="text"
@@ -181,7 +195,15 @@
 </div>`
   };
   
-  // main search component
+  // for user profile
+  let ProfileComponent = {
+    template: `<div class='container'>
+  <h1>Name: {{ data.name }}</h1>
+</div>`,
+    props: {
+      data: Object
+    }
+  }
 
   // register components for testing
   Vue.component('sign-in', SignInComponent);
@@ -193,13 +215,17 @@
     el: '#app',
     data: {
       current_view: SearchComponent,
-      username: null
+      username: null,
+      data: {}
     },
     methods: {
-      to_view(view_name) {
+      to_view(view_name, data) {
         switch(view_name) {
           case 'sign_in': this.current_view = SignInComponent; break;
           case 'sign_up': this.current_view = SignUpComponent; break;
+          case 'user': this.current_view = ProfileComponent;
+                       this.data = { name: data };
+                       break;
         }
       },
       update_user() {

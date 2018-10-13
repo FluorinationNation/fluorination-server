@@ -21,7 +21,8 @@ app.use(bodyParser.json());
 const pgp = require('pg-promise')();
 const db = pgp(process.env.DATABASE_URL + "?ssl=true");
 // setting up database
-// db.none('create table users (id serial primary key, username text unique, password text unique, location text, posts text, rep int, quality float)').catch(_=>_);
+//db.none('drop table users').catch(_=>_);
+//db.none('create table users (id serial primary key, username text unique, password text, location text default \'\', posts text default \'\', rep int default 0, quality float default 0)').catch(_=>_);
 
 // for encrypting passwords
 const bcrypt = require('bcryptjs');
@@ -36,8 +37,8 @@ app.post('/sign_up', async function(req, res) {
   // simple validation here
   let password_hash = await bcrypt.hash(password, saltRounds);
   db.oneOrNone('insert into users (username, password, location) values($1, $2, $3) returning id', [username, password_hash, location])
-    .then(id => {
-      req.session.userId = id;
+    .then(data => {
+      req.session.uid = data.id;
       res.send(true);
     })
     .catch(err => {
@@ -59,7 +60,7 @@ app.post('/sign_in', async function(req, res) {
 
       let password_match = await bcrypt.compare(password, data.password);
       if(password_match) {
-        req.session.userId = data.id;
+        req.session.uid = data.id;
         res.send(true);
       } else {
         res.send(false);
@@ -73,9 +74,9 @@ app.post('/sign_in', async function(req, res) {
 
 // get user details
 app.post('/get_username', function(req, res) {
-  if(req.session.userId == undefined) return res.send(null);
+  if(req.session.uid == undefined) return res.send(null);
 
-  db.oneOrNone('select username from users where id=$1', [req.session.userId])
+  db.oneOrNone('select username from users where id=$1', [req.session.uid])
     .then(data => {
       if(data == null) return res.send(null);
       
