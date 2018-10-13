@@ -285,7 +285,9 @@
       <button class='btn btn-outline-primary form-control mr-2' @click='toggle_map'>Location</button>
     </div>
   </div>
-  <div class='d-block mx-auto' id='map_container' style='width:640px;height:480px;position:relative;overflow:hidden' ref='map_container' v-show='show_map'></div>
+  <div class='mb-4' v-show='show_map'>
+    <div class='d-block mx-auto' id='map_container' style='width:640px;height:480px;position:relative;overflow:hidden' ref='map_container'></div>
+  </div>
   <div id='results'>
     <div class="list-group" v-show='query.length > 0'>
       <a href v-for='result in results' class="list-group-item list-group-item-action" @click='$emit("to-view","view_post",result.objectID);$event.preventDefault()'>
@@ -295,6 +297,7 @@
     <div v-show='query.length != 0 && results.length == 0'>
       <p class='text-secondary text-center'>No results were found.</p>
     </div>
+    {{remove_map}}
   </div>
 </div>`,
     data() {
@@ -303,8 +306,19 @@
         results: [],
         subject_filter: -1,
         course_filter: -1,
-        location_filter: -1
+        location_filter: -1,
+        show_map: false,
+        map: null,
+        markers: []
       };
+    },
+    computed: {
+      remove_map() {
+        console.log('testing')
+        if(this.query.length == '' && this.show_map) {
+          this.toggle_map();
+        }
+      }
     },
     methods: {
       search() {
@@ -317,6 +331,14 @@
         Server.query(this.query, filters.join(' AND '), data => {
           // i feel super smart using splice and the spread operator =)
           this.results.splice(0, this.results.length, ...JSON.parse(data).hits);
+
+          // add markers to map
+          if(this.map)
+            this.map.removeObjects(this.markers);
+          this.markers = [];
+          this.markers = this.results.map(result => new H.map.Marker(result._geoloc));
+          if(this.map)
+            this.map.addObjects(this.markers);
         });
       },
       feeling_lucky() {
@@ -325,23 +347,26 @@
         }
       },
       toggle_map() {
-        
+        this.show_map = !this.show_map;
+        if(this.show_map) {
+          setTimeout(() => {
+            let platform = new H.service.Platform({
+              'app_id': '5qyf1xaVdILt6uHyIx8J',
+              'app_code': '_WZ8o92p1VEsJPfkuyZ7oQ'
+            });
+            let default_layers = platform.createDefaultLayers();
+            this.map = new H.Map(this.$refs.map_container,
+              default_layers.normal.map,
+              {
+                zoom: 4,
+                center: { lat: 39, lng: -98 }
+              });
+          }, 500);
+        }
       }
     },
     mounted() {
       this.$refs.search_input.focus();
-      var platform = new H.service.Platform({
-        'app_id': '5qyf1xaVdILt6uHyIx8J',
-        'app_code': '_WZ8o92p1VEsJPfkuyZ7oQ'
-      });
-      let default_layers = platform.createDefaultLayers();
-      let map = new H.Map(this.$refs.map_container,
-        default_layers.normal.map,
-        {
-          zoom: 4,
-          center: { lat: 39, lng: -98 }
-        });
-
     }
   };
 

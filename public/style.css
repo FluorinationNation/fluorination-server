@@ -11,13 +11,10 @@ html, body, #app, component, .container {
   margin-bottom: 10rem;
   flex: 1 0 0;
 }
-.container#search, .container#sign_in, .container#sign_up {
+.container#sign_in, .container#sign_up {
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-.container#search.collapsed {
-  justify-content: flex-start;
 }
 #userblock {
   position: absolute;
