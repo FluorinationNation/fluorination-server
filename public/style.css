@@ -6,6 +6,8 @@ html, body, #app, component, .container {
   flex-direction: column;
 }
 .container {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
   flex: 1 0 0;
 }
 .container#search, .container#sign_in, .container#sign_up {

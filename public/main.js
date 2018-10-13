@@ -209,6 +209,77 @@
     }
   }
 
+  // create post
+  let PostComponent = {
+    template: `<div class='container'>
+  <div class='form-group'>
+    <label for='title_input'>Title</label>
+    <input
+      class='form-control'
+      id='title_input'
+      placeholder='Title'
+      v-model='title'>
+  </div>
+  <div class='form-group'>
+    <label for='title_input'>Keywords</label>
+    <input
+      class='form-control'
+      id='keywords_input'
+      placeholder='Keywords (comma-separated)'
+      v-model='keywords'>
+  </div>
+  <div class='form-group'>
+    <label for='subject_select'>Subject</label>
+    <select class='custom-select d-block w-auto' id='subject_select' v-model='subject'>
+      <option value='-1'>Select a Subject</option>
+      <option value='1'>Mathematics</option>
+      <option value='2'>Science</option>
+      <option value='3'>Literature</option>
+      <option value='4'>Language</option>
+      <option value='5'>Social Studies</option>
+      <option value='6'>Health</option>
+      <option value='7'>Art</option>
+      <!-- dynamically fill this soon -->
+      <option value='0'>Other</option>
+    </select>
+  </div>
+  <div class='form-group'>
+    <label for='course_select'>Course</label>
+    <select class='custom-select d-block w-auto' id='course_select' v-model='course'>
+      <option value='-1'>Select a Subject</option>
+      <!-- dynamically fill this soon -->
+      <option value='0'>Other</option>
+    </select>
+  </div>
+  <hr>
+  <div class='form-group'>
+    <textarea
+      class='form-control'
+      id='body_input'
+      rows='20'
+      placeholder='Enter knowledge here...'
+      v-model='body'></textarea>
+  </div>
+  <div class='form-group'>
+    <button class='btn btn-primary' @click='add_knowledge'>Add knowledge</button>
+  </div>
+</div>`,
+    data() {
+      return {
+        title: '',
+        keywords: '',
+        subject: -1,
+        course: -1,
+        body: ''
+      };
+    },
+    methods: {
+      add_knowledge() {
+        console.log(this.title, this.keywords, this.subject, this.course, this.body);
+      }
+    }
+  };
+
   // register components for testing
   Vue.component('sign-in', SignInComponent);
   Vue.component('sign-up', SignUpComponent);

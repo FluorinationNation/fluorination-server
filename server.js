@@ -23,6 +23,9 @@ const db = pgp(process.env.DATABASE_URL + "?ssl=true");
 // setting up database
 //db.none('drop table users').catch(_=>_);
 //db.none('create table users (id serial primary key, username text unique, password text, location text default \'\', posts text default \'\', rep int default 0, quality float default 0)').catch(_=>_);
+//db.none('create table posts (id serial primary key, title text unique, tags text, body text, votes text, location text, uid int, subject int, course int').catch(_=>_);
+//db.none('create table subject (id serial primary key, name text unique, courses text)').catch(_=>_);
+//db.none('create table courses (id serial primary key, name text unique, sid int)').catch(_=>_);
 
 // for encrypting passwords
 const bcrypt = require('bcryptjs');
