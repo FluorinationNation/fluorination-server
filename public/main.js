@@ -169,10 +169,14 @@
   let SearchComponent = {
     template: `<div id='#container'>
   <div class="input-group input-group-lg w-50 m-auto">
-    <div class="input-group-prepend">
-      <span class="input-group-text" id="inputGroup-sizing-lg">Search</span>
+    <input
+      type="text"
+      class="form-control"
+      id='search'
+      placeholder='What is the golden ratio?'>
+    <div class="input-group-append">
+      <span class="input-group-text p-0 border-primary" style='overflow: hidden' id="inputGroup-sizing-lg"><button class='btn btn-lg btn-primary w-100 h-100 rounded-0'>Search</button></span>
     </div>
-    <input type="text" class="form-control" id='search'>
   </div>
 </div>`
   };
