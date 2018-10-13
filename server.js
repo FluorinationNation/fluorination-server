@@ -21,12 +21,12 @@ app.use(bodyParser.json());
 const pgp = require('pg-promise')();
 const db = pgp(process.env.DATABASE_URL + "?ssl=true");
 // setting up database
-/*db.none('drop table users');
-db.none('drop table posts');
-db.none('create table users (id serial primary key, username text unique, password text, location text default \'\', posts text default \'{}\', rep int default 0, quality float default 0)');
-db.none('create table posts (id serial primary key, title text unique, tags text, body text, votes text default \'{}\', location text default \'\', uid int, subject int, course int');
-db.none('create table subject (id serial primary key, name text unique, courses text)');
-db.none('create table courses (id serial primary key, name text unique, sid int)');*/
+//db.none('drop table users');
+//db.none('drop table posts');
+//db.none('create table users (id serial primary key, username text unique, password text, location text default \'\', posts text default \'{}\', rep int default 0, quality float default 0)');
+//db.none('create table posts (id serial primary key, title text unique, keywords text, tags text, body text, votes text default \'{}\', location text default \'\', uid int, subject int, course int)');
+//db.none('create table subject (id serial primary key, name text unique, courses text)');
+//db.none('create table courses (id serial primary key, name text unique, sid int)');
 
 // for encrypting passwords
 const bcrypt = require('bcryptjs');
@@ -110,9 +110,10 @@ app.post('/add_knowledge', function(req, res) {
   let keywords = req.body.keywords;
   let subject = req.body.subject;
   let course = req.body.course;
+  let location = req.body.location;
   let body = req.body.body;
 
-  db.oneOrNone('insert into posts (title, keywords, subject, course, body) returning id', [title, keywords, subject, course, body])
+  db.oneOrNone('insert into posts (title, keywords, subject, course, body) values ($1, $2, $3, $4, $5) returning id', [title, keywords, subject, course, body])
     .then(data => {
       // send to algolia
       let aobject = [{
@@ -124,8 +125,11 @@ app.post('/add_knowledge', function(req, res) {
         course: course,
         location: location
       }];
+      aindex.addObjects(aobject, (err, content) => {
+        console.log(content);
+      });
 
-      res.send(data.id);
+      res.send({id: data.id});
     })
     .catch(err => {
       console.log(err);
