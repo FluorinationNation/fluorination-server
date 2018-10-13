@@ -21,15 +21,21 @@ app.use(bodyParser.json());
 const pgp = require('pg-promise')();
 const db = pgp(process.env.DATABASE_URL + "?ssl=true");
 // setting up database
-//db.none('drop table users').catch(_=>_);
-//db.none('create table users (id serial primary key, username text unique, password text, location text default \'\', posts text default \'\', rep int default 0, quality float default 0)').catch(_=>_);
-//db.none('create table posts (id serial primary key, title text unique, tags text, body text, votes text, location text, uid int, subject int, course int').catch(_=>_);
-//db.none('create table subject (id serial primary key, name text unique, courses text)').catch(_=>_);
-//db.none('create table courses (id serial primary key, name text unique, sid int)').catch(_=>_);
+/*db.none('drop table users');
+db.none('drop table posts');
+db.none('create table users (id serial primary key, username text unique, password text, location text default \'\', posts text default \'{}\', rep int default 0, quality float default 0)');
+db.none('create table posts (id serial primary key, title text unique, tags text, body text, votes text default \'{}\', location text default \'\', uid int, subject int, course int');
+db.none('create table subject (id serial primary key, name text unique, courses text)');
+db.none('create table courses (id serial primary key, name text unique, sid int)');*/
 
 // for encrypting passwords
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
+
+// for angolia search
+const asearch = require('algoliasearch');
+const aclient = asearch(process.env.ALGOLIA_APPLICATION_ID, process.env.ALGOLIA_API_KEY);
+const aindex = aclient.initIndex('fluorination');
 
 // sign up a user
 app.post('/sign_up', async function(req, res) {
@@ -96,6 +102,35 @@ app.post('/sign_out', function(req, res) {
   req.session.regenerate(_ => {
     res.send(null);
   });
+});
+
+// insert knowledge into the database
+app.post('/add_knowledge', function(req, res) {
+  let title = req.body.title;
+  let keywords = req.body.keywords;
+  let subject = req.body.subject;
+  let course = req.body.course;
+  let body = req.body.body;
+
+  db.oneOrNone('insert into posts (title, keywords, subject, course, body) returning id', [title, keywords, subject, course, body])
+    .then(data => {
+      // send to algolia
+      let aobject = [{
+        objectID: data.id,
+        keywords: keywords,
+        title: title,
+        votes: 0,
+        subject: subject,
+        course: course,
+        location: location
+      }];
+
+      res.send(data.id);
+    })
+    .catch(err => {
+      console.log(err);
+      res.send(false);
+    });
 });
 
 // statically host files in public folder

@@ -36,6 +36,16 @@
     },
     sign_out(cb) {
       this.send_request('sign_out', {}, cb);
+    },
+    add_knowledge(title, keywords, subject, course, location, body, cb) {
+      this.send_request('add_knowledge', {
+        title: title,
+        keywords: keywords,
+        subject: subject,
+        course: course,
+        location: location,
+        body: body
+      }, cb);
     }
   };
 
@@ -229,6 +239,14 @@
       v-model='keywords'>
   </div>
   <div class='form-group'>
+    <label for='location_input'>Location</label>
+    <input
+      class='form-control'
+      id='location_input'
+      placeholder='Location'
+      v-model='location'>
+  </div>
+  <div class='form-group'>
     <label for='subject_select'>Subject</label>
     <select class='custom-select d-block w-auto' id='subject_select' v-model='subject'>
       <option value='-1'>Select a Subject</option>
@@ -239,6 +257,7 @@
       <option value='5'>Social Studies</option>
       <option value='6'>Health</option>
       <option value='7'>Art</option>
+      <option value='8'>Education</option>
       <!-- dynamically fill this soon -->
       <option value='0'>Other</option>
     </select>
@@ -270,13 +289,19 @@
         keywords: '',
         subject: -1,
         course: -1,
+        location: '',
         body: ''
       };
     },
     methods: {
       add_knowledge() {
-        console.log(this.title, this.keywords, this.subject, this.course, this.body);
+        Server.add_knowledge(this.title, this.keywords, this.subject, this.course, this.location, this.body, data => {
+          console.log(data);
+        });
       }
+    },
+    created() {
+      // updated courses and location from server
     }
   };
 
