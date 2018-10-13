@@ -31,8 +31,11 @@
           password: password
         }, cb);
     },
-    get_username(cb) {
-      this.send_request('get_username', {}, cb);
+    get_userdata(cb) {
+      this.send_request('get_userdata', {}, cb);
+    },
+    get_username(uid, cb) {
+      this.send_request('get_username', { uid: uid }, cb);
     },
     sign_out(cb) {
       this.send_request('sign_out', {}, cb);
@@ -46,6 +49,9 @@
         location: location,
         body: body
       }, cb);
+    },
+    get_post(pid, cb) {
+      this.send_request('get_post', { pid: pid }, cb);
     }
   };
 
@@ -206,19 +212,81 @@
       id='search'
       placeholder='What is the golden ratio?'>
     <div class="input-group-append">
-      <span class="input-group-text p-0 border-primary" style='overflow: hidden' id="inputGroup-sizing-lg"><button class='btn btn-lg btn-primary w-100 h-100 rounded-0'>Search</button></span>
+      <span class="input-group-text p-0 border-primary" style='overflow: hidden' id="inputGroup-sizing-lg"><button class='btn btn-lg btn-primary w-100 h-100 rounded-0' @click='$emit("to-view", "view_post", "8")'>Search</button></span>
     </div>
   </div>
 </div>`
+  };
+
+  // for viewing a post
+  let ViewPostComponent = {
+    template: `<div class='container' id='post'>
+  <h1>{{ title }}</h1>
+  <p>Upvotes: {{ up_votes }} | Downvotes: {{ down_votes }}</p>
+  <p>Keywords:
+    <span v-for='keyword in keywords'>{{ keyword }}</span> 
+  </p>
+  <p>Subject: {{ subject.name }}</p>
+  <p>Course: {{ course.name }}</p>
+  <p>User: <a href @click='$emit("to-view","user",uid.id);$event.preventDefault()'>{{ uid.username }}</a></p>
+  <p>Location: {{ location }}</p>
+  <p>{{ body }}</p>
+</div>`,
+    props: {
+      data: Object
+    },
+    computed: {
+      up_votes() {
+        return this.votes.up.length;
+      },
+      down_votes() {
+        return this.votes.down,length;
+      }
+    },
+    data() {
+      return {
+        title: '',
+        votes: { up: [], down: [] },
+        body: "",
+        keywords: [],
+        location: location,
+        course: { name: '' },
+        subject: { name: '' },
+        uid: { username: '' }
+      };
+    },
+    created() {
+      Server.get_post(this.data.pid, data => {
+        data = JSON.parse(data);
+        this.title = data.title;
+        this.votes = data.votes;
+        this.body = data.body;
+        this.keywords = data.keywords;
+        this.location = data.location;
+        this.course = data.course;
+        this.subject = data.subject;
+        this.uid = data.uid;
+      });
+    }
   };
   
   // for user profile
   let ProfileComponent = {
     template: `<div class='container'>
-  <h1>Name: {{ data.name }}</h1>
+  <h1>Name: {{ name }}</h1>
 </div>`,
     props: {
       data: Object
+    },
+    data() {
+      return {
+        name: ''
+      }
+    },
+    created() {
+      Server.get_username(this.data.uid, data => {
+        this.name = data;
+      });
     }
   }
 
@@ -319,6 +387,7 @@
     data: {
       current_view: SearchComponent,
       username: null,
+      uid: null,
       data: {}
     },
     methods: {
@@ -330,13 +399,24 @@
           case 'post': this.current_view = PostComponent; break;
           case 'about': this.current_view = AboutComponent; break;
           case 'user': this.current_view = ProfileComponent;
-                       this.data = { name: data };
+                       this.data = { uid: data };
+                       break;
+          case 'view_post': this.current_view = ViewPostComponent;
+                       this.data = { pid: data };
                        break;
         }
       },
       update_user() {
-        Server.get_username(data => {
-          this.username = data;
+        Server.get_userdata(data => {
+          if(!data) {
+            this.username = null;
+            this.uid = null;
+            return;
+          }
+
+          data = JSON.parse(data);
+          this.username = data.username;
+          this.uid = data.id;
         });
       },
       sign_out() {

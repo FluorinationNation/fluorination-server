@@ -30,7 +30,7 @@
       <!-- user details in top right -->
       <div id='userblock'>
         <div v-if='username'>
-          <a class='text-underline mr-2' href title='View profile' @click='to_view("user", username);$event.preventDefault()'>{{ username }}</a>
+          <a class='text-underline mr-2' href title='View profile' @click='to_view("user",uid);$event.preventDefault()'>{{ username }}</a>
           <button class='btn btn-outline-danger m-2' @click='sign_out' @click='sign_out'>Sign out</button>
         </div>
         <div v-else>

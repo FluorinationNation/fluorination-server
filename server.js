@@ -24,9 +24,9 @@ const db = pgp(process.env.DATABASE_URL + "?ssl=true");
 //db.none('drop table users');
 //db.none('drop table posts');
 //db.none('create table users (id serial primary key, username text unique, password text, location text default \'\', posts text default \'{}\', rep int default 0, quality float default 0)');
-//db.none('create table posts (id serial primary key, title text unique, keywords text, tags text, body text, votes text default \'{}\', location text default \'\', uid int, subject int, course int)');
-//db.none('create table subject (id serial primary key, name text unique, courses text)');
-//db.none('create table courses (id serial primary key, name text unique, sid int)');
+//db.none('create table posts (id serial primary key, title text unique, keywords text, tags text, body text, votes text default \'{"up":[],"down":[]}\', location text default \'\', uid int, subject int, course int)');
+//db.none('create table subjects (id serial primary key, name text unique, courses text)');
+//db.none('create table courses (id serial primary key, name text, sid int)');
 
 // for encrypting passwords
 const bcrypt = require('bcryptjs');
@@ -81,11 +81,30 @@ app.post('/sign_in', async function(req, res) {
     });
 });
 
-// get user details
-app.post('/get_username', function(req, res) {
+// get user data
+app.post('/get_userdata', function(req, res) {
   if(req.session.uid == undefined) return res.send(null);
 
   db.oneOrNone('select username from users where id=$1', [req.session.uid])
+    .then(data => {
+      if(data == null) return res.send(null);
+      
+      res.send({
+        username: data.username,
+        id: req.session.uid
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.send(null);
+    })
+});
+
+// get user name from id
+app.post('/get_username', function(req, res) {
+  if(req.body.uid == undefined) return res.send(null);
+
+  db.oneOrNone('select username from users where id=$1', [req.body.uid])
     .then(data => {
       if(data == null) return res.send(null);
       
@@ -140,7 +159,26 @@ app.post('/add_knowledge', function(req, res) {
 // get post data
 app.post('/get_post', function(req, res) {
   let pid = req.body.pid;
+  db.oneOrNone('select title, keywords, subject, course, body, votes, location, uid from posts where id=$1', pid)
+    .then(async data => {
+      if(data == null)
+        return res.send(false);
 
+      // parse data
+      // data.title = data.title
+      data.keywords = data.keywords.split(',');
+      data.subject = await db.one('select name, id from subjects where id=$1', [data.subject]);
+      data.course = await db.one('select name, id from courses where id=$1', [data.course]);
+      // data.body = data.body
+      data.votes = JSON.parse(data.votes);
+      // data.location = data.location
+      data.uid = await db.one('select username, id from users where id=$1', [data.uid]);
+      res.send(data);
+    })
+    .catch(err => {
+      res.send(false);
+      console.log(err);
+    });
 });
 
 // statically host files in public folder
