@@ -24,7 +24,7 @@ const db = pgp(process.env.DATABASE_URL + "?ssl=true");
 // db.none('create table users (id serial primary key, username text unique, password text unique, location text, posts text, rep int, quality float)').catch(_=>_);
 
 // for encrypting passwords
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
 // sign up a user
