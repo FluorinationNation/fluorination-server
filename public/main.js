@@ -56,6 +56,12 @@
     query(query, filters, geo_filter, cb) {
       let data_obj = { query: query, filters: filters, geo_filter: geo_filter };
       this.send_request('query', data_obj, cb);
+    },
+    upvote(pid, cb) {
+      this.send_request('upvote', { pid: pid }, cb);
+    },
+    downvote(pid, cb) {
+      this.send_request('downvote', { pid: pid }, cb);
     }
   };
 
@@ -331,7 +337,6 @@
           filters.push('course:' + this.course_filter);
         Server.query(this.query, filters.join(' AND '), this.geo_filter, data => {
           // i feel super smart using splice and the spread operator =)
-          console.log(this.results);
           this.results.splice(0, this.results.length, ...JSON.parse(data).hits);
 
           // add markers to map
@@ -372,7 +377,6 @@
             this.$refs.map_container.addEventListener('click', evt => {
               let coord = this.map.screenToGeo(evt.pageX - this.$refs.map_container.getBoundingClientRect().left, evt.pageY - this.$refs.map_container.getBoundingClientRect().top);
               this.geo_filter = coord.lat.toFixed(4) + ', ' + coord.lng.toFixed(4);
-              console.log(this.geo_filter);
               this.search();
             });
           }, 500);
@@ -388,7 +392,7 @@
   let ViewPostComponent = {
     template: `<div class='container' id='post'>
   <h1>{{ title }}</h1>
-  <p>Upvotes: {{ up_votes }} | Downvotes: {{ down_votes }}</p>
+  <p>Upvotes: {{ up_votes }} <button class='btn btn-outline-success' @click='upvote'>Upvote</button> | Downvotes: {{ down_votes }} <button class='btn btn-outline-danger' @click='downvote'>Downvote</button></p>
   <p>Keywords:
     <span class='badge badge-pill badge-light px-2' v-for='keyword in keywords'>{{ keyword }}</span> 
   </p>
@@ -434,6 +438,16 @@
         this.subject = data.subject;
         this.uid = data.uid;
       });
+    },
+    methods: {
+      upvote() {
+        Server.upvote(this.data.pid, _=>_);
+        this.votes.up.push(null);
+      },
+      downvote() {
+        Server.downvote(this.data.pid, _=>_);
+        this.votes.down.push(null);
+      }
     }
   };
   
@@ -539,7 +553,6 @@
     methods: {
       add_knowledge() {
         Server.add_knowledge(this.title, this.keywords, this.subject, this.course, this.location, this.body, data => {
-          console.log(data);
         });
       }
     },

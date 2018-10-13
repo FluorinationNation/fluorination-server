@@ -246,6 +246,73 @@ let geocode = (address, cb) => {
   }).end();
 };
 
+// upvotes and downvotes
+app.post('/upvote', function(req, res) {
+  let pid = req.body.pid;
+
+  db.one('select votes from posts where id=$1', [pid])
+    .then(data => {
+      data = JSON.parse(data.votes);
+      data.up.push(null);
+
+      let votes = data.up.length - data.down.length;
+
+      data = JSON.stringify(data);
+      
+      db.none('update posts set votes=$1 where id=$2', [data,pid])
+        .catch(err => {
+          console.log(err);
+          res(false);
+        })
+
+      let aobject = [{
+        objectID: data.pid,
+        votes: votes
+      }];
+
+      aindex.partialUpdateObject(aobject, _=>_);
+
+      res.send(true);
+    })
+    .catch(err => {
+      console.log(err);
+      res.send(false);
+    });
+});
+// copied from above except moved down instead of up
+app.post('/downvote', function(req, res) {
+  let pid = req.body.pid;
+
+  db.one('select votes from posts where id=$1', [pid])
+    .then(data => {
+      data = JSON.parse(data.votes);
+      data.down.push(null);
+
+      let votes = data.up.length - data.down.length;
+
+      data = JSON.stringify(data);
+      
+      db.none('update posts set votes=$1 where id=$2', [data,pid])
+        .catch(err => {
+          console.log(err);
+          res(false);
+        })
+
+      let aobject = [{
+        objectID: data.pid,
+        votes: votes
+      }];
+
+      aindex.partialUpdateObject(aobject, _=>_);
+
+      res.send(true);
+    })
+    .catch(err => {
+      console.log(err);
+      res.send(false);
+    });
+});
+
 // statically host files in public folder
 app.use(express.static('./public/'));
 app.listen(process.env.PORT || 5000);
