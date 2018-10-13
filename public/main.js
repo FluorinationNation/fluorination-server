@@ -314,7 +314,6 @@
     },
     computed: {
       remove_map() {
-        console.log('testing')
         if(this.query.length == '' && this.show_map) {
           this.toggle_map();
         }
@@ -361,6 +360,7 @@
                 zoom: 4,
                 center: { lat: 39, lng: -98 }
               });
+            this.map.addObjects(this.markers);
           }, 500);
         }
       }
@@ -376,12 +376,12 @@
   <h1>{{ title }}</h1>
   <p>Upvotes: {{ up_votes }} | Downvotes: {{ down_votes }}</p>
   <p>Keywords:
-    <span v-for='keyword in keywords'>{{ keyword }}</span> 
+    <span class='badge badge-pill badge-light px-2' v-for='keyword in keywords'>{{ keyword }}</span> 
   </p>
   <p>Subject: {{ subject.name }}</p>
   <p>Course: {{ course.name }}</p>
   <p>User: <a href @click='$emit("to-view","user",uid.id);$event.preventDefault()'>{{ uid.username }}</a></p>
-  <p>Location: {{ location }}</p>
+  <p>Location: {{ location.loc }}</p>
   <p>{{ body }}</p>
   <p class='mt-3'><a href @click='$emit("to-view", "search");$event.preventDefault()'>Return to search</a></p>
 </div>`,
@@ -415,7 +415,7 @@
         this.votes = data.votes;
         this.body = data.body;
         this.keywords = data.keywords;
-        this.location = data.location;
+        this.location = JSON.parse(data.location);
         this.course = data.course;
         this.subject = data.subject;
         this.uid = data.uid;
