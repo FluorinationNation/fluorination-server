@@ -32,7 +32,17 @@
       <component
         :is='current_view'
         :data='data'
-        @update-user='update_user'></component>
+        @update-user='update_user'
+        @to-view='to_view'></component>
+
+      <!-- footer -->
+      <div class='jumbotron jumbotron-fluid bg-light mb-0 py-3' id='footer'>
+        <div class='text-center'>
+          <a class='text-dark' @click='to_view("search");$event.preventDefault()' href>Search</a> |
+          <a class='text-dark' @click='to_view("post");$event.preventDefault()' href>Post</a> |
+          <a class='text-dark' @click='to_view("about");$event.preventDefault()' href>About</a>
+        </div>
+      </footer>
 
     </div>
   </body>

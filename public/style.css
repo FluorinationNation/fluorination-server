@@ -1,7 +1,14 @@
-html, body, #app {
+html, body, #app, component, .container {
   height: 100%;
 }
 #app {
+  display: flex;
+  flex-direction: column;
+}
+.container {
+  flex: 1 0 0;
+}
+.container#search, .container#sign_in, .container#sign_up {
   display: flex;
   flex-direction: column;
   justify-content: center;

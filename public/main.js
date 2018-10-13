@@ -41,7 +41,7 @@
 
   // sign in component
   let SignUpComponent = {
-    template: `<div class='container'>
+    template: `<div class='container' id='sign_up'>
   <div class='form-group'>
     <label for='username_input'>Username</label>
     <input
@@ -117,11 +117,13 @@
       <option value='0'>Other</option>
     </select>
   </div>
-  <button
-    class='btn btn-primary'
-    type='button'
-    id='sign_up'
-    @click='sign_up()'>Sign up</button>
+  <div>
+    <button
+      class='btn btn-primary w-auto'
+      type='button'
+      id='sign_up'
+      @click='sign_up()'>Sign up</button>
+  </div>
 </div>`,
     data() {
       return {
@@ -142,7 +144,7 @@
 
   // for signing in
   let SignInComponent = {
-    template: `<div class='container'>
+    template: `<div class='container' id='sign_in'>
   <div class='form-group'>
     <label for='username_input'>Username</label>
     <input
@@ -161,7 +163,9 @@
       v-model='password'
       placeholder='⁎⁎⁎⁎⁎⁎'>
   </div>
-  <button class='btn btn-primary' @click='sign_in'>Sign in</button>
+  <div>
+    <button class='btn btn-primary w-auto' @click='sign_in'>Sign in</button>
+  </div>
 </div>`,
     data() {
       return {
@@ -181,7 +185,7 @@
 
   // for main search
   let SearchComponent = {
-    template: `<div class='#container'>
+    template: `<div class='container' id='search'>
   <div class="input-group input-group-lg w-50 m-auto">
     <input
       type="text"
@@ -223,6 +227,9 @@
         switch(view_name) {
           case 'sign_in': this.current_view = SignInComponent; break;
           case 'sign_up': this.current_view = SignUpComponent; break;
+          case 'search': this.current_view = SearchComponent; break;
+          case 'post': this.current_view = PostComponent; break;
+          case 'about': this.current_view = AboutComponent; break;
           case 'user': this.current_view = ProfileComponent;
                        this.data = { name: data };
                        break;
